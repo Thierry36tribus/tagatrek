@@ -1,1 +1,38 @@
-<div>TODO</div>
+<div>
+  <div class="row">
+    <div class="col-md-4">
+      <div>Objectifs atteints : {{objectivesMet.length}} / {{objectives.length}}</div>
+      <div ng-show="objectivesMat.length == objectives.length"class="jumbotron">
+      </div>
+      <div>
+        <div ng-repeat="met in objectivesMet">{{met.name}}</div>
+      </div>
+    </div>
+    
+    <div class="col-md-8">
+      <div class="grid">
+        <div ng-repeat="row in grid">
+          <span ng-repeat="cell in row" class="cell">{{cell.content}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row program">
+    <h2>Mon programme :</h2>
+    <div class="col-md-2">
+      <button ng-repeat="instruction in availableInstructions" type="button" class="btn btn-primary btn-lg btn-block" ng-click="addInstruction(instruction)">{{instruction.name}}</button>
+    </div>
+    <div class="col-md-8">
+      <div>
+        <button ng-repeat="instruction in program.instructions" class="btn btn-primary" ng-click="removeInstruction(instruction)">{{instruction.name}}</button>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary" ng-click="start()">En avant !</button>
+      <button class="btn btn-info" ng-click="reset()">Revenir au centre</button>
+      <hr>
+      <button class="btn btn-default" ng-click="clearProgram()">Effacer le programme</button>
+    </div>
+  </div>
+</div>
