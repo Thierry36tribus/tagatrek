@@ -1,7 +1,42 @@
 'use strict'
+class Bot
+  constructor: (@viewer,@row,@col,@direction,@gridLastIndex)->
+    
+  getContent: ()->
+    ['x','>','v','<'][@direction / 90]
+    
+  turn: (angle)->
+    if @direction == 0 && angle == -90
+      @direction = 270
+    else if @direction == 270 && angle == 90
+      @direction = 0
+    else 
+      @direction = @direction + angle
+    console.log 'turnBot ',angle," -> ", @direction
+    @viewer(@getContent())    
+    
+  move : (addRow,addCol) ->
+    console.log 'moveBot ', addRow, addCol
+    if (0 <= @row + addRow <= @gridLastIndex) and (0 <= @col + addCol <= @gridLastIndex)
+      @viewer('.')
+      @row += addRow
+      @col += addCol
+      @viewer(@getContent())
+      # TODO checkObjectives()
+  
+  go: ()->
+    console.log 'goBot', @direction
+    switch @direction 
+      when 0 then @move -1,0
+      when 90 then @move 0,1
+      when 180 then @move 1,0
+      when 270 then @move -0,-1      
+
+
+# -------------------------------------------------------------------------      
 
 angular.module 'tagatrekApp'
-  .controller 'MainCtrl', ($scope,$interval) ->
+  .controller 'MainCtrl', ($scope,$interval) ->    
     #TODO charger objectifs depuis un fichier json
     $scope.objectives = [{id:1,name:"objectif 1"},{id:2,name:"objectif 2"}]
     
@@ -32,13 +67,12 @@ angular.module 'tagatrekApp'
     bot = {}
     gridLastIndex = 10 
     instructionIndex = 0
-
-    updateBotContent = ()->
-      $scope.grid[bot.row][bot.col].content = ['x','>','v','<'][bot.direction / 90]
-      console.log 'updateBot, ', bot
+    
+    updateBotView = (content)->
+      $scope.grid[bot.row][bot.col].content = content
     
     initGrid = () ->
-      bot = {row: gridLastIndex/2, col: gridLastIndex/2, direction: 90}
+      bot = new Bot(updateBotView,gridLastIndex/2, gridLastIndex/2, 90,gridLastIndex)
       grid = []
       id = 0
       for row in [0..gridLastIndex]
@@ -48,48 +82,18 @@ angular.module 'tagatrekApp'
           id++
         grid.push(colArray)  
       $scope.grid = grid
-      updateBotContent()
+      updateBotView(bot.getContent())
     
     initGrid()
     
-    moveBot = (addRow,addCol) ->
-      console.log 'moveBot ', addRow, addCol
-      if (0 <= bot.row + addRow <= gridLastIndex) and (0 <= bot.col + addCol <= gridLastIndex)
-        $scope.grid[bot.row][bot.col].content = '.'
-        bot.row += addRow
-        bot.col += addCol
-        updateBotContent()
-      
     $scope.reset = () ->
       initGrid()
     
-    turnBot = (angle)->
-      if bot.direction == 0 && angle == -90
-        bot.direction = 270
-      else if bot.direction == 270 && angle == 90
-        bot.direction = 0
-      else 
-        bot.direction = bot.direction + angle
-      console.log 'turnBot ',angle," -> ", bot.direction
-      updateBotContent()
-    
-    goBot = ()->
-      console.log 'goBot', bot.direction
-      switch bot.direction 
-        when 0 then moveBot -1,0
-        when 90 then moveBot 0,1
-        when 180 then moveBot 1,0
-        when 270 then moveBot -0,-1
-    
     run = () ->
-      console.log 'run ', $scope.program.instructions[instructionIndex]
       switch $scope.program.instructions[instructionIndex].code
-        when 'right' then turnBot 90
-        when 'left' then turnBot -90
-        when 'go' then goBot()
-        else console.log 'else'
-      console.log 'run done'
-        
+        when 'right' then bot.turn 90
+        when 'left' then bot.turn -90
+        when 'go' then bot.go()        
       instructionIndex += 1
     
     $scope.start = () ->
