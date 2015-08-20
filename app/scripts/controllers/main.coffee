@@ -1,7 +1,7 @@
 'use strict'
 
 angular.module 'tagatrekApp'
-  .controller 'MainCtrl', ($scope) ->
+  .controller 'MainCtrl', ($scope,$interval) ->
     #TODO charger objectifs depuis un fichier json
     $scope.objectives = [{id:1,name:"objectif 1"},{id:2,name:"objectif 2"}]
     
@@ -31,9 +31,14 @@ angular.module 'tagatrekApp'
 
     bot = {}
     gridLastIndex = 10 
+    instructionIndex = 0
+
+    updateBotContent = ()->
+      $scope.grid[bot.row][bot.col].content = ['x','>','v','<'][bot.direction / 90]
+      console.log 'updateBot, ', bot
     
     initGrid = () ->
-      bot = {row: gridLastIndex/2, col: gridLastIndex/2}
+      bot = {row: gridLastIndex/2, col: gridLastIndex/2, direction: 90}
       grid = []
       id = 0
       for row in [0..gridLastIndex]
@@ -42,21 +47,56 @@ angular.module 'tagatrekApp'
           colArray.push({id: id, content: '.'})
           id++
         grid.push(colArray)  
-      grid[bot.row][bot.col].content = 'X'
       $scope.grid = grid
+      updateBotContent()
     
     initGrid()
     
     moveBot = (addRow,addCol) ->
+      console.log 'moveBot ', addRow, addCol
       if (0 <= bot.row + addRow <= gridLastIndex) and (0 <= bot.col + addCol <= gridLastIndex)
         $scope.grid[bot.row][bot.col].content = '.'
-        bot.row = bot.row + addRow
-        bot.col = bot.col + addCol
-        $scope.grid[bot.row][bot.col].content = 'X'
-    
-    $scope.start = () ->
-      moveBot(-1,1)
+        bot.row += addRow
+        bot.col += addCol
+        updateBotContent()
       
     $scope.reset = () ->
       initGrid()
     
+    turnBot = (angle)->
+      if bot.direction == 0 && angle == -90
+        bot.direction = 270
+      else if bot.direction == 270 && angle == 90
+        bot.direction = 0
+      else 
+        bot.direction = bot.direction + angle
+      console.log 'turnBot ',angle," -> ", bot.direction
+      updateBotContent()
+    
+    goBot = ()->
+      console.log 'goBot', bot.direction
+      switch bot.direction 
+        when 0 then moveBot -1,0
+        when 90 then moveBot 0,1
+        when 180 then moveBot 1,0
+        when 270 then moveBot -0,-1
+    
+    run = () ->
+      console.log 'run ', $scope.program.instructions[instructionIndex]
+      switch $scope.program.instructions[instructionIndex].code
+        when 'right' then turnBot 90
+        when 'left' then turnBot -90
+        when 'go' then goBot()
+        else console.log 'else'
+      console.log 'run done'
+        
+      instructionIndex += 1
+    
+    $scope.start = () ->
+      initGrid()
+      instructionIndex = 0
+      $interval(()->
+        run()
+      ,500,$scope.program.instructions.length)
+        
+  
