@@ -5,8 +5,8 @@
       <div ng-show="objectivesMet.length == objectives.length"class="jumbotron">
         Bravo !
       </div>
-      <div>
-        <div ng-repeat="met in objectivesMet">{{met.name}}</div>
+      <div class="met">
+        <div ng-repeat="met in objectivesMet"><a href="http://{{met.data.fields.site_web}}" target="_blank">{{met.data.fields.titre}} <img ng-src="{{met.data.fields.multimedia_url_photo}}"></a></div>
       </div>
     </div>
     
