@@ -2,7 +2,8 @@
   <div class="row">
     <div class="col-md-4">
       <div>Objectifs atteints : {{objectivesMet.length}} / {{objectives.length}}</div>
-      <div ng-show="objectivesMat.length == objectives.length"class="jumbotron">
+      <div ng-show="objectivesMet.length == objectives.length"class="jumbotron">
+        Bravo !
       </div>
       <div>
         <div ng-repeat="met in objectivesMet">{{met.name}}</div>

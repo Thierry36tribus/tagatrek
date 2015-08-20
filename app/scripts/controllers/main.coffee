@@ -1,4 +1,13 @@
 'use strict'
+
+# -------------------------------------------------------------------------   
+class Objective
+  constructor: (@id,@name,@row,@col)->
+  
+  check: (row,col)->
+    row == @row && col == @col
+
+# -------------------------------------------------------------------------   
 class Bot
   constructor: (@viewer,@row,@col,@direction,@gridLastIndex)->
     
@@ -22,7 +31,7 @@ class Bot
       @row += addRow
       @col += addCol
       @viewer(@getContent())
-      # TODO checkObjectives()
+      @checkObjectives()
   
   go: ()->
     console.log 'goBot', @direction
@@ -32,13 +41,22 @@ class Bot
       when 180 then @move 1,0
       when 270 then @move -0,-1      
 
-
+  setObjectives: (@objectives)->
+  setOnObjectiveCheck: (@onObjectiveCheck)->
+  
+  checkObjectives: ()->
+    @onObjectiveCheck(objective) for objective in @objectives when objective.check(@row,@col)
+    
 # -------------------------------------------------------------------------      
 
 angular.module 'tagatrekApp'
   .controller 'MainCtrl', ($scope,$interval) ->    
+    
     #TODO charger objectifs depuis un fichier json
-    $scope.objectives = [{id:1,name:"objectif 1"},{id:2,name:"objectif 2"}]
+    $scope.objectives = [
+      new Objective(1,"obj 1", 3, 5),
+      new Objective(2,"obj 2", 4, 7)
+    ]
     
     $scope.objectivesMet = []
     
@@ -72,7 +90,13 @@ angular.module 'tagatrekApp'
       $scope.grid[bot.row][bot.col].content = content
     
     initGrid = () ->
+      $scope.objectivesMet = []
       bot = new Bot(updateBotView,gridLastIndex/2, gridLastIndex/2, 90,gridLastIndex)
+      bot.setObjectives $scope.objectives
+      bot.setOnObjectiveCheck((objective)->
+        console.log 'checked! ', objective
+        $scope.objectivesMet.push(objective)
+      )
       grid = []
       id = 0
       for row in [0..gridLastIndex]
@@ -81,6 +105,9 @@ angular.module 'tagatrekApp'
           colArray.push({id: id, content: '.'})
           id++
         grid.push(colArray)  
+      for obj in $scope.objectives
+        grid[obj.row][obj.col].content = "O"
+        
       $scope.grid = grid
       updateBotView(bot.getContent())
     
