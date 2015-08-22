@@ -10,15 +10,24 @@
       </div>
     </div>
     
-    <div class="col-md-8">
+    <div class="col-md-6">
       <div class="grid">
         <div ng-repeat="row in grid">
           <span ng-repeat="cell in row" class="cell">{{cell.content}}</span>
         </div>
       </div>
     </div>
-  </div>
-  
+    <div class="col-md-2">
+      <button class="btn btn-info" ng-click="newGame()">Nouvelle partie</button>
+      <div ng-show="selecting">
+        <select ng-model="datasetId" class="form-control">
+          <option ng-repeat="dataset in datasets" value="{{dataset.id}}">{{dataset.name}}</option>
+        </select>  
+        <button class="btn btn-default" ng-click="cancelNewGame()">Annuler</button>
+        <button class="btn btn-info" ng-click="startNewGame()">Ok</button>
+      </div>
+    </div>
+  </div>  
   <div class="row program">
     <h2>Mon programme :</h2>
     <div class="col-md-2">
@@ -30,7 +39,7 @@
       </div>
     </div>
     <div class="col-md-2">
-      <button class="btn btn-primary" ng-click="start()">En avant !</button>
+      <button class="btn btn-primary btn-lg" ng-click="start()">Exécuter le programme</button>
       <button class="btn btn-info" ng-click="reset()">Revenir au centre</button>
       <hr>
       <button class="btn btn-default" ng-click="clearProgram()">Effacer le programme</button>
