@@ -33,8 +33,8 @@ angular.module 'tagatrekApp'
     getDatasets = (callback)->
       callback([ {id:1, name:"Loisirs"}, {id:2, name:"Evénements"}])
       
-    getObjectives = (datasetId)->
-      getRandomObjectives(getDataset(datasetId))
+    getObjectives = (datasetId,lastIndex,nb)->
+      getRandomObjectives(getDataset(datasetId),lastIndex,nb)
       
     getDataset = (datasetId)->  
       if datasetId == "1"
@@ -43,16 +43,14 @@ angular.module 'tagatrekApp'
         return dataset2
       
       
-    getRandomObjectives = (datasetData)->
+    getRandomObjectives = (datasetData,lastIndex,nb)->
+      # TODO empêcher objectif au centre
       data = shuffle datasetData
-      result = [
-        new Objective(1, 3, 5,data[0]),
-        new Objective(2, 4, 7,data[1])
-      ]
-      console.log 'objectives:', result
+      indexes = (i for i in [0..lastIndex])
+      indexes = shuffle indexes
+      result = []
+      result.push(new Objective(i+1,indexes[2*i],indexes[2*i+1],data[i])) for i in [0..nb-1]
       return result
-
-
     
     return {
       getDatasets : getDatasets,

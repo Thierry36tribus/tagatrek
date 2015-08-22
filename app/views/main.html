@@ -10,19 +10,21 @@
       </div>
     </div>
     
-    <div class="col-md-6">
+    <div class="col-md-5">
       <div class="grid">
         <div ng-repeat="row in grid">
-          <img ng-repeat="cell in row" class="celll" src="images/{{cell.content}}.png">
+          <img ng-repeat="cell in row" class="celll" ng-src="images/{{cell.content}}.png">
         </div>
       </div>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-3">
       <button class="btn btn-info" ng-click="newGame()">Nouvelle partie</button>
       <div ng-show="selecting">
         <select ng-model="datasetId" class="form-control">
           <option ng-repeat="dataset in datasets" value="{{dataset.id}}">{{dataset.name}}</option>
         </select>  
+        Niveau :
+        <slider ng-model="level" min="1" step="1" max="5" value="1"></slider>
         <button class="btn btn-default" ng-click="cancelNewGame()">Annuler</button>
         <button class="btn btn-info" ng-click="startNewGame()">Ok</button>
       </div>

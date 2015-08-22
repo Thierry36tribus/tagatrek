@@ -47,6 +47,8 @@ angular.module 'tagatrekApp'
     gridLastIndex = 10 
     instructionIndex = 0
     
+    $scope.level = 2
+    
     updateBotView = (content)->
       $scope.grid[bot.row][bot.col].content = content
     
@@ -77,17 +79,14 @@ angular.module 'tagatrekApp'
       
     $scope.startNewGame = ()->
       $scope.selecting = false
+      updateObjectives $scope.datasetId
       $scope.objectivesMet = []
       $scope.program = {instructions : []}
       initGrid()
       
     updateObjectives = (datasetId)->
-      $scope.objectives = Objectives.getObjectives(datasetId) 
-      
-    $scope.$watch('datasetId', (newDatasetId)->
-      updateObjectives newDatasetId
-    )
-      
+      $scope.objectives = Objectives.getObjectives(datasetId,gridLastIndex,$scope.level) 
+            
     Objectives.getDatasets((datasets)->
       $scope.datasetId = "1"
       $scope.datasets = datasets
