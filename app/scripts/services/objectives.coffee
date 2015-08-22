@@ -17,6 +17,19 @@ dataset2 = [{"datasetid": "adt04_fetes_animations", "recordid": "26464b245fa980a
 angular.module 'tagatrekApp'
   .service 'Objectives', ->
     
+    getRandomInt = (min, max) ->
+      Math.floor(Math.random() * (max - min)) + min
+    
+    shuffle = (array)->
+      m = array.length
+      while (m) 
+        i = Math.floor(Math.random() * m--)
+        t = array[m]
+        array[m] = array[i]
+        array[i] = t
+      return array
+    
+    
     getDatasets = (callback)->
       callback([ {id:1, name:"Loisirs"}, {id:2, name:"Evénements"}])
       
@@ -30,12 +43,14 @@ angular.module 'tagatrekApp'
         return dataset2
       
       
-    getRandomObjectives = (data)->  
-      [
+    getRandomObjectives = (datasetData)->
+      data = shuffle datasetData
+      result = [
         new Objective(1, 3, 5,data[0]),
         new Objective(2, 4, 7,data[1])
       ]
-    
+      console.log 'objectives:', result
+      return result
 
 
     
