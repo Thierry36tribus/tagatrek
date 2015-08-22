@@ -31,7 +31,7 @@ angular.module 'tagatrekApp'
     
     
     getDatasets = (callback)->
-      callback([ {id:1, name:"Loisirs"}, {id:2, name:"Evénements"}])
+      callback([ {id:'1', name:"Loisirs"}, {id:'2', name:"Evénements"}])
       
     getObjectives = (datasetId,lastIndex,nb)->
       getRandomObjectives(getDataset(datasetId),lastIndex,nb)

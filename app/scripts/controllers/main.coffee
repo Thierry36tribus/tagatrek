@@ -84,11 +84,18 @@ angular.module 'tagatrekApp'
       $scope.program = {instructions : []}
       initGrid()
       
+    findDataset = (datasetId)->
+      for dataset in $scope.datasets
+        if dataset.id == datasetId 
+          return dataset
+      return false
+      
     updateObjectives = (datasetId)->
       $scope.objectives = Objectives.getObjectives(datasetId,gridLastIndex,$scope.level) 
+      $scope.datasetName = findDataset(datasetId).name
             
     Objectives.getDatasets((datasets)->
-      $scope.datasetId = "1"
+      $scope.datasetId = datasets[0].id
       $scope.datasets = datasets
       updateObjectives($scope.datasetId)
       $scope.startNewGame()

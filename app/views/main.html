@@ -1,7 +1,8 @@
 <div>
   <div class="row">
     <div class="col-md-4">
-      <div>Objectifs atteints : {{objectivesMet.length}} / {{objectives.length}}</div>
+      <h2>Données : {{datasetName}}</h2>
+      <div>{{datasetName}} atteints : {{objectivesMet.length}} / {{objectives.length}}</div>
       <div ng-show="objectivesMet.length == objectives.length"class="jumbotron">
         Bravo !
       </div>
@@ -20,6 +21,7 @@
     <div class="col-md-3">
       <button class="btn btn-info" ng-click="newGame()">Nouvelle partie</button>
       <div ng-show="selecting">
+        Données :
         <select ng-model="datasetId" class="form-control">
           <option ng-repeat="dataset in datasets" value="{{dataset.id}}">{{dataset.name}}</option>
         </select>  
