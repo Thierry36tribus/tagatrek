@@ -5,6 +5,7 @@
 }
 .grid {
   height:300px;
+  font-family: monospace;
 }
 .grid .cell {
   margin: 5px;
