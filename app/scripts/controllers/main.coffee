@@ -4,7 +4,7 @@ class Bot
   constructor: (@viewer,@row,@col,@direction,@gridLastIndex)->
     
   getContent: ()->
-    ['x','>','v','<'][@direction / 90]
+    ['up','right','down','left'][@direction / 90]
     
   turn: (angle)->
     if @direction == 0 && angle == -90
@@ -19,7 +19,7 @@ class Bot
   move : (addRow,addCol) ->
     console.log 'moveBot ', addRow, addCol
     if (0 <= @row + addRow <= @gridLastIndex) and (0 <= @col + addCol <= @gridLastIndex)
-      @viewer('.')
+      @viewer('empty')
       @row += addRow
       @col += addCol
       @viewer(@getContent())
@@ -63,11 +63,11 @@ angular.module 'tagatrekApp'
       for row in [0..gridLastIndex]
         colArray = []
         for col in [0..gridLastIndex]
-          colArray.push({id: id, content: '.'})
+          colArray.push({id: id, content: 'empty'})
           id++
         grid.push(colArray)  
       for obj in $scope.objectives
-        grid[obj.row][obj.col].content = "O"
+        grid[obj.row][obj.col].content = "objective"
         
       $scope.grid = grid
       updateBotView(bot.getContent())
