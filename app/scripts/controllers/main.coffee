@@ -151,4 +151,10 @@ angular.module 'tagatrekApp'
         return images
       imagesArray = images.split(';')
       return imagesArray[0]
+    
+    $scope.$watch('targetsMet',()->
+      $scope.score = $scope.level*(gridLastIndex*gridLastIndex - $scope.program.instructions.length)
+    )
+    
+    
       

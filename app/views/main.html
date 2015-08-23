@@ -4,7 +4,7 @@
       <h2>Données : {{datasetName}}</h2>
       <div>{{datasetName}} atteints : {{targetsMet.length}} / {{targets.length}}</div>
       <div ng-show="targetsMet.length == targets.length"class="jumbotron">
-        Bravo !
+        Bravo ! Ton score : {{score}}
       </div>
       <div class="met">
         <div ng-repeat="met in targetsMet"><a href="{{getTargetUrl(met.data.fields.site_web)}}" target="_blank">{{met.data.fields.titre}} <img ng-src="{{getTargetImage(met.data.fields.multimedia_url_photo)}}"></a></div>
