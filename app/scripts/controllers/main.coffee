@@ -23,7 +23,7 @@ class Bot
       @row += addRow
       @col += addCol
       @viewer(@getContent())
-      @checkObjectives()
+      @checkTargets()
   
   go: ()->
     console.log 'goBot', @direction
@@ -33,16 +33,16 @@ class Bot
       when 180 then @move 1,0
       when 270 then @move -0,-1      
 
-  setObjectives: (@objectives)->
-  setOnObjectiveCheck: (@onObjectiveCheck)->
+  setTargets: (@targets)->
+  setOnTargetCheck: (@onTargetCheck)->
   
-  checkObjectives: ()->
-    @onObjectiveCheck(objective) for objective in @objectives when objective.check(@row,@col)
+  checkTargets: ()->
+    @onTargetCheck(target) for target in @targets when target.check(@row,@col)
     
 # -------------------------------------------------------------------------      
 
 angular.module 'tagatrekApp'
-  .controller 'MainCtrl', ($scope,$interval,Objectives) ->    
+  .controller 'MainCtrl', ($scope,$interval,Targets) ->    
     bot = {}
     gridLastIndex = 10 
     instructionIndex = 0
@@ -53,12 +53,12 @@ angular.module 'tagatrekApp'
       $scope.grid[bot.row][bot.col].content = content
     
     initGrid = () ->
-      $scope.objectivesMet = []
+      $scope.targetsMet = []
       bot = new Bot(updateBotView,gridLastIndex/2, gridLastIndex/2, 90,gridLastIndex)
-      bot.setObjectives $scope.objectives
-      bot.setOnObjectiveCheck((objective)->
-        console.log 'checked! ', objective
-        $scope.objectivesMet.push(objective)
+      bot.setTargets $scope.targets
+      bot.setOnTargetCheck((target)->
+        console.log 'checked! ', target
+        $scope.targetsMet.push(target)
       )
       grid = []
       id = 0
@@ -68,8 +68,8 @@ angular.module 'tagatrekApp'
           colArray.push({id: id, content: 'empty'})
           id++
         grid.push(colArray)  
-      for obj in $scope.objectives
-        grid[obj.row][obj.col].content = "objective"
+      for target in $scope.targets
+        grid[target.row][target.col].content = "target"
         
       $scope.grid = grid
       updateBotView(bot.getContent())
@@ -79,8 +79,8 @@ angular.module 'tagatrekApp'
       
     $scope.startNewGame = ()->
       $scope.selecting = false
-      updateObjectives $scope.datasetId
-      $scope.objectivesMet = []
+      updateTargets $scope.datasetId
+      $scope.targetsMet = []
       $scope.program = {instructions : []}
       initGrid()
       
@@ -90,14 +90,14 @@ angular.module 'tagatrekApp'
           return dataset
       return false
       
-    updateObjectives = (datasetId)->
-      $scope.objectives = Objectives.getObjectives(datasetId,gridLastIndex,$scope.level) 
+    updateTargets = (datasetId)->
+      $scope.targets = Targets.getTargets(datasetId,gridLastIndex,$scope.level) 
       $scope.datasetName = findDataset(datasetId).name
             
-    Objectives.getDatasets((datasets)->
+    Targets.getDatasets((datasets)->
       $scope.datasetId = datasets[0].id
       $scope.datasets = datasets
-      updateObjectives($scope.datasetId)
+      updateTargets($scope.datasetId)
       $scope.startNewGame()
     )
     
@@ -141,4 +141,14 @@ angular.module 'tagatrekApp'
         run()
       ,500,$scope.program.instructions.length)
     
-  
+    $scope.getTargetUrl = (url)->
+      if url && url.indexOf("http://") != 0
+        return 'http://' + url
+      return url
+    
+    $scope.getTargetImage = (images)->
+      if (!images)
+        return images
+      imagesArray = images.split(';')
+      return imagesArray[0]
+      

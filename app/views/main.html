@@ -2,12 +2,12 @@
   <div class="row">
     <div class="col-md-4">
       <h2>Données : {{datasetName}}</h2>
-      <div>{{datasetName}} atteints : {{objectivesMet.length}} / {{objectives.length}}</div>
-      <div ng-show="objectivesMet.length == objectives.length"class="jumbotron">
+      <div>{{datasetName}} atteints : {{targetsMet.length}} / {{targets.length}}</div>
+      <div ng-show="targetsMet.length == targets.length"class="jumbotron">
         Bravo !
       </div>
       <div class="met">
-        <div ng-repeat="met in objectivesMet"><a href="http://{{met.data.fields.site_web}}" target="_blank">{{met.data.fields.titre}} <img ng-src="{{met.data.fields.multimedia_url_photo}}"></a></div>
+        <div ng-repeat="met in targetsMet"><a href="{{getTargetUrl(met.data.fields.site_web)}}" target="_blank">{{met.data.fields.titre}} <img ng-src="{{getTargetImage(met.data.fields.multimedia_url_photo)}}"></a></div>
       </div>
     </div>
     
