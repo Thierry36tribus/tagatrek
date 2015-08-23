@@ -34,12 +34,16 @@
   </div>  
   <div class="row program">
     <h2>Mon programme :</h2>
+    {{flattenInstructions}}
     <div class="col-md-2">
       <button ng-repeat="instruction in availableInstructions" type="button" class="btn btn-primary btn-lg btn-block" ng-click="addInstruction(instruction)">{{instruction.name}}</button>
+      <button ng-repeat="function in program.functions" type="button" class="btn btn-primary btn-lg btn-block" ng-click="addInstruction(function)">{{function.name}}</button>
+      <hr>
+      <button ng-show="level > 1" ng-click="addFunction()" class="btn btn-info btn-block">Ajouter une fonction</button>
     </div>
     <div class="col-md-8">
       <div>
-        <button ng-repeat="instruction in program.instructions" class="btn btn-primary" ng-click="removeInstruction(instruction)">{{instruction.name}}</button>
+        <button ng-repeat="instruction in program.instructions track by $index" class="btn btn-primary" ng-click="removeInstruction(instruction)">{{instruction.name}}</button>
       </div>
     </div>
     <div class="col-md-2">
@@ -47,6 +51,21 @@
       <button class="btn btn-info" ng-click="reset()">Revenir au centre</button>
       <hr>
       <button class="btn btn-default" ng-click="clearProgram()">Effacer le programme</button>
+    </div>
+  </div>
+  <h2 ng-show="program.functions.length > 0">Mes fonctions :</h2>
+  <div ng-repeat="function in program.functions" class="row function">
+    <div class="col-md-2">
+      <input type="text" ng-model="function.name" placeholder="Nom de la fonction" class="form-control" >
+      <button ng-repeat="instruction in availableInstructions" type="button" class="btn btn-primary btn-lg btn-block" ng-click="addInstruction(instruction,function)">{{instruction.name}}</button>
+    </div>
+    <div class="col-md-8">
+      <div>
+        <button ng-repeat="instruction in function.instructions track by $index" class="btn btn-primary" ng-click="removeInstruction(instruction,function)">{{instruction.name}}</button>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-default" ng-click="removeFunction(function)">Supprimer la fonction</button>
     </div>
   </div>
 </div>

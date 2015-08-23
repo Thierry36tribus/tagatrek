@@ -13,11 +13,11 @@ class Bot
       @direction = 0
     else 
       @direction = @direction + angle
-    console.log 'turnBot ',angle," -> ", @direction
+    #console.log 'turnBot ',angle," -> ", @direction
     @viewer(@getContent())    
     
   move : (addRow,addCol) ->
-    console.log 'moveBot ', addRow, addCol
+    #console.log 'moveBot ', addRow, addCol
     if (0 <= @row + addRow <= @gridLastIndex) and (0 <= @col + addCol <= @gridLastIndex)
       @viewer('empty')
       @row += addRow
@@ -26,7 +26,7 @@ class Bot
       @checkTargets()
   
   go: ()->
-    console.log 'goBot', @direction
+    #console.log 'goBot', @direction
     switch @direction 
       when 0 then @move -1,0
       when 90 then @move 0,1
@@ -46,6 +46,7 @@ angular.module 'tagatrekApp'
     bot = {}
     gridLastIndex = 10 
     instructionIndex = 0
+    flattenInstructions = []
     
     $scope.level = 2
     
@@ -81,7 +82,7 @@ angular.module 'tagatrekApp'
       $scope.selecting = false
       updateTargets $scope.datasetId
       $scope.targetsMet = []
-      $scope.program = {instructions : []}
+      $scope.program = {instructions : [], functions: []}
       initGrid()
       
     findDataset = (datasetId)->
@@ -110,36 +111,51 @@ angular.module 'tagatrekApp'
       {id:3, code:"right", name:"Droite"}
     ]
     
-    $scope.addInstruction = (instruction) ->
-      newInstruction = angular.copy(instruction)
-      newInstruction.id = $scope.program.instructions.length
-      $scope.program.instructions.push(newInstruction)
+    $scope.addInstruction = (newInstruction,aFunction) ->
+      if aFunction
+        instructions = aFunction.instructions
+      else
+         instructions  = $scope.program.instructions
+      newInstruction.id = instructions.length
+      instructions.push(newInstruction)  
      
-    $scope.removeInstruction = (instruction) ->
+    $scope.removeInstruction = (instruction,aFunction) ->
+      instructions = if aFunction then aFunction.instructions else $scope.program.instructions
       index = -1
-      index = i for inst,i in $scope.program.instructions when inst.id == instruction.id
+      index = i for inst,i in instructions when inst.id == instruction.id
       if index >= 0   
-        $scope.program.instructions.splice(index,1)
+        instructions.splice(index,1)
       
     $scope.clearProgram = () ->
       $scope.program.instructions = []
-        
+      
     $scope.reset = () ->
       initGrid()
     
     run = () ->
-      switch $scope.program.instructions[instructionIndex].code
+      instruction = flattenInstructions[instructionIndex]
+      switch instruction.code
         when 'right' then bot.turn 90
         when 'left' then bot.turn -90
-        when 'go' then bot.go()        
+        when 'go' then bot.go() 
       instructionIndex += 1
+    
+    flatInstructions = (instructions)->
+      flatten = []
+      for instruction in instructions
+        if instruction.instructions
+          flatten = flatten.concat(instruction.instructions)
+        else
+          flatten.push(instruction)
+      return flatten
     
     $scope.start = () ->
       initGrid()
       instructionIndex = 0
+      flattenInstructions = flatInstructions $scope.program.instructions
       $interval(()->
         run()
-      ,500,$scope.program.instructions.length)
+      ,500,flattenInstructions.length)
     
     $scope.getTargetUrl = (url)->
       if url && url.indexOf("http://") != 0
@@ -156,5 +172,23 @@ angular.module 'tagatrekApp'
       $scope.score = $scope.level*(gridLastIndex*gridLastIndex - $scope.program.instructions.length)
     )
     
+    # Fonctions -------------------------------------------------------
+  
+    $scope.addFunction = ()->
+      newFunction = {id: 'f' + $scope.program.functions.length, instructions:[], code:'function'}
+      newFunction.name = 'Fonction ' + ($scope.program.functions.length+1)
+      $scope.program.functions.push newFunction
     
-      
+    $scope.removeFunction = (aFunction)->
+      index = -1
+      index = i for f,i in $scope.program.functions when f.id == aFunction.id
+      if index >= 0   
+        $scope.program.functions.splice(index,1)
+      # on l'enlève de la liste des instructions du programme
+      newInstructions = []
+      for inst in $scope.program.instructions 
+        if inst.name != aFunction.name
+          newInstructions.push(inst)
+      $scope.program.instructions = newInstructions
+
+    
