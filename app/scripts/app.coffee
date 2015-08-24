@@ -14,7 +14,8 @@ angular
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-    'ui.bootstrap-slider'
+    'ui.bootstrap-slider',
+    'ui.bootstrap'
   ]
   .config ($routeProvider) ->
     $routeProvider

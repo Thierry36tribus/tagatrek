@@ -1,24 +1,56 @@
 body {
-    background: url(../images/back.png);
-    background-size: cover;
+  font-family: 'Coming Soon', Verdana, Arial, sans-serif;
+  background: #EE544E;
+}
+.trek {
+  background: url(../images/back.png);
+  background-size: cover;
+  padding-top: 30px;
+  padding-bottom: 50px;
 }
 .met img {
   width: 50px;
   height: auto;
 }
 .grid {
-  height:300px;
+/*  height: 300px;*/
   font-family: monospace;
 }
 .grid .cell {
+  width: 30px;
+  height: 30px;
   margin: 5px;
 }
-
-.program, .function {
-  margin: 30px;
+.program {
+  padding: 30px;
+  border-top: 1px solid #E5E5E5;
+  background: #C686E8 ;
+  color: #fff;
+}
+.program h3 {
+  margin-top: 5px;
+}
+.program .btn-default {
+  color: #804F98;
+}
+.add-function {
+  margin-top: 10px;
+}
+.function {
+  margin-bottom: 10px;
+}
+.work-zone {
+  padding: 30px;
+  border-radius: 5px;
+  background: #fff;
 }
 .footer {
   padding-top: 19px;
-  color: #777;
   border-top: 1px solid #e5e5e5;
+  color: #fff;
+  background: #EE544E;
+}
+.footer a {
+  color: #fff;
+  text-decoration: underline;
 }

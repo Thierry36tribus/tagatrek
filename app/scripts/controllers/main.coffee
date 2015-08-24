@@ -44,7 +44,7 @@ class Bot
 angular.module 'tagatrekApp'
   .controller 'MainCtrl', ($scope,$interval,Targets) ->    
     bot = {}
-    gridLastIndex = 10 
+    gridLastIndex = 8 
     instructionIndex = 0
     flattenInstructions = []
     
@@ -106,9 +106,9 @@ angular.module 'tagatrekApp'
       $scope.selecting = false
      
     $scope.availableInstructions = [
-      {id:1, code:"go", name:"Avancer"},
-      {id:2, code:"left", name:"Gauche"},
-      {id:3, code:"right", name:"Droite"}
+      {id:1, code:"go", name:"Avancer d'une case", icon:"fa-arrow-right"},
+      {id:2, code:"left", name:"Pivoter à gauche", icon: "fa-undo"},
+      {id:3, code:"right", name:"Pivoter à droite", icon: "fa-repeat"}
     ]
     
     $scope.addInstruction = (newInstruction,aFunction) ->
@@ -176,7 +176,7 @@ angular.module 'tagatrekApp'
   
     $scope.addFunction = ()->
       newFunction = {id: 'f' + $scope.program.functions.length, instructions:[], code:'function'}
-      newFunction.name = 'Fonction ' + ($scope.program.functions.length+1)
+      newFunction.name = 'F' + ($scope.program.functions.length+1)
       $scope.program.functions.push newFunction
     
     $scope.removeFunction = (aFunction)->

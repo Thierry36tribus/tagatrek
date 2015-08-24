@@ -1,71 +1,84 @@
-<div>
-  <div class="row">
-    <div class="col-md-4">
-      <h2>Données : {{datasetName}}</h2>
-      <div>{{datasetName}} atteints : {{targetsMet.length}} / {{targets.length}}</div>
-      <div ng-show="targetsMet.length == targets.length"class="jumbotron">
-        Bravo ! Ton score : {{score}}
-      </div>
-      <div class="met">
-        <div ng-repeat="met in targetsMet"><a href="{{getTargetUrl(met.data.fields.site_web)}}" target="_blank">{{met.data.fields.titre}} <img ng-src="{{getTargetImage(met.data.fields.multimedia_url_photo)}}"></a></div>
-      </div>
-    </div>
-    
-    <div class="col-md-5">
-      <div class="grid">
-        <div ng-repeat="row in grid">
-          <img ng-repeat="cell in row" class="celll" ng-src="images/{{cell.content}}.png">
+<div class="trek">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-4">
+        <h1>Tagatrek</h1>
+        <h2 ng-show="targetsMet.length== 0">Programme Tag pour qu'il découvre les Alpes de Haute-Provence !</h2>
+        <h3>Données : {{datasetName}}</h3>
+        <div>{{datasetName}} atteints : {{targetsMet.length}} / {{targets.length}}</div>
+        <div ng-show="targetsMet.length == targets.length" class="jumbotron">
+          Bravo ! Ton score : {{score}}
+        </div>
+        <div class="met">
+          <div ng-repeat="met in targetsMet"><a href="{{getTargetUrl(met.data.fields.site_web)}}" target="_blank">{{met.data.fields.titre}} <img ng-src="{{getTargetImage(met.data.fields.multimedia_url_photo)}}"></a></div>
         </div>
       </div>
-    </div>
-    <div class="col-md-3">
-      <button class="btn btn-info" ng-click="newGame()">Nouvelle partie</button>
-      <div ng-show="selecting">
-        Données :
-        <select ng-model="datasetId" class="form-control">
-          <option ng-repeat="dataset in datasets" value="{{dataset.id}}">{{dataset.name}}</option>
-        </select>  
-        Niveau :
-        <slider ng-model="level" min="1" step="1" max="5" value="1"></slider>
-        <button class="btn btn-default" ng-click="cancelNewGame()">Annuler</button>
-        <button class="btn btn-info" ng-click="startNewGame()">Ok</button>
+
+      <div class="col-lg-4 text-center">
+        <div class="grid">
+          <div ng-repeat="row in grid">
+            <img ng-repeat="cell in row" class="cell" ng-src="images/{{cell.content}}.png">
+          </div>
+        </div>
       </div>
-    </div>
-  </div>  
-  <div class="row program">
-    <h2>Mon programme :</h2>
-    {{flattenInstructions}}
+      <div class="col-lg-4">
+        <button class="btn btn-info" ng-click="newGame()">Nouvelle partie</button>
+        <div ng-show="selecting">
+          Données :
+          <select ng-model="datasetId" class="form-control">
+            <option ng-repeat="dataset in datasets" value="{{dataset.id}}">{{dataset.name}}</option>
+          </select>  
+          Niveau :
+          <slider ng-model="level" min="1" step="1" max="5" value="1"></slider>
+          <button class="btn btn-default" ng-click="cancelNewGame()">Annuler</button>
+          <button class="btn btn-info" ng-click="startNewGame()">Ok</button>
+        </div>
+      </div>
+    </div>  
+  </div>
+</div>
+<div class="program">
+ <div class="row">
+   <div class="col-md-2">
+     <h3>Mon programme</h3>
+   </div>
+   <div class="col-md-8">
+     <button class="btn btn-default" ng-click="start()" tooltip="Exécuter le programme"><i class="fa fa-play"></i></button>
+      <button class="btn btn-default" ng-click="reset()" tooltip="Revenir au centre"><i class="fa fa-stop"></i></button>
+   </div>
+ </div>
+  <div class="row">
     <div class="col-md-2">
-      <button ng-repeat="instruction in availableInstructions" type="button" class="btn btn-primary btn-lg btn-block" ng-click="addInstruction(instruction)">{{instruction.name}}</button>
-      <button ng-repeat="function in program.functions" type="button" class="btn btn-primary btn-lg btn-block" ng-click="addInstruction(function)">{{function.name}}</button>
-      <hr>
-      <button ng-show="level > 1" ng-click="addFunction()" class="btn btn-info btn-block">Ajouter une fonction</button>
+      <button ng-repeat="instruction in availableInstructions" type="button" class="btn btn-warning" ng-click="addInstruction(instruction)" tooltip="{{instruction.name}}"><i class="fa {{instruction.icon}}"></i></button>
+      <button ng-repeat="function in program.functions" type="button" class="btn btn-warning" ng-click="addInstruction(function)">{{function.name}}</button>
     </div>
     <div class="col-md-8">
-      <div>
-        <button ng-repeat="instruction in program.instructions track by $index" class="btn btn-primary" ng-click="removeInstruction(instruction)">{{instruction.name}}</button>
+      <div class="work-zone">
+        <button ng-repeat="instruction in program.instructions track by $index" class="btn btn-warning" ng-click="removeInstruction(instruction)"><i ng-show="instruction.code != 'function'" class="fa {{instruction.icon}}"></i><span ng-show="instruction.code == 'function'">{{instruction.name}}</span></button>
       </div>
     </div>
     <div class="col-md-2">
-      <button class="btn btn-primary btn-lg" ng-click="start()">Exécuter le programme</button>
-      <button class="btn btn-info" ng-click="reset()">Revenir au centre</button>
-      <hr>
-      <button class="btn btn-default" ng-click="clearProgram()">Effacer le programme</button>
+      <button class="btn btn-default" ng-click="clearProgram()" tooltip="Effacer le programme"><i class="fa fa-trash-o"></i></button>
     </div>
   </div>
-  <h2 ng-show="program.functions.length > 0">Mes fonctions :</h2>
+  <div class="row">
+    <div class="col-md-12">
+      <button ng-show="level > 1" ng-click="addFunction()" class="add-function btn btn-default">Créer une fonction</button>
+    </div>
+  </div>
+  <h3 ng-show="program.functions.length > 0">Mes fonctions :</h3>
   <div ng-repeat="function in program.functions" class="row function">
     <div class="col-md-2">
       <input type="text" ng-model="function.name" placeholder="Nom de la fonction" class="form-control" >
-      <button ng-repeat="instruction in availableInstructions" type="button" class="btn btn-primary btn-lg btn-block" ng-click="addInstruction(instruction,function)">{{instruction.name}}</button>
+      <button ng-repeat="instruction in availableInstructions" type="button" class="btn btn-warning" ng-click="addInstruction(instruction,function)" tooltip="{{instruction.name}}"><i class="fa {{instruction.icon}}"></i></button>
     </div>
     <div class="col-md-8">
-      <div>
-        <button ng-repeat="instruction in function.instructions track by $index" class="btn btn-primary" ng-click="removeInstruction(instruction,function)">{{instruction.name}}</button>
+      <div class="work-zone">
+        <button ng-repeat="instruction in function.instructions track by $index" class="btn btn-warning" ng-click="removeInstruction(instruction,function)"><i class="fa {{instruction.icon}}"></i></button>
       </div>
     </div>
     <div class="col-md-2">
-      <button class="btn btn-default" ng-click="removeFunction(function)">Supprimer la fonction</button>
+      <button class="btn btn-default" ng-click="removeFunction(function)" tooltip="Supprimer la fonction"><i class="fa fa-trash-o"></i></button>
     </div>
   </div>
 </div>
