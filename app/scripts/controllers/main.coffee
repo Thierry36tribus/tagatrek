@@ -13,50 +13,53 @@ class Bot
       @direction = 0
     else 
       @direction = @direction + angle
-    console.log 'turnBot ',angle," -> ", @direction
+    #console.log 'turnBot ',angle," -> ", @direction
     @viewer(@getContent())    
     
   move : (addRow,addCol) ->
-    console.log 'moveBot ', addRow, addCol
+    #console.log 'moveBot ', addRow, addCol
     if (0 <= @row + addRow <= @gridLastIndex) and (0 <= @col + addCol <= @gridLastIndex)
       @viewer('empty')
       @row += addRow
       @col += addCol
       @viewer(@getContent())
-      @checkObjectives()
+      @checkTargets()
   
   go: ()->
-    console.log 'goBot', @direction
+    #console.log 'goBot', @direction
     switch @direction 
       when 0 then @move -1,0
       when 90 then @move 0,1
       when 180 then @move 1,0
       when 270 then @move -0,-1      
 
-  setObjectives: (@objectives)->
-  setOnObjectiveCheck: (@onObjectiveCheck)->
+  setTargets: (@targets)->
+  setOnTargetCheck: (@onTargetCheck)->
   
-  checkObjectives: ()->
-    @onObjectiveCheck(objective) for objective in @objectives when objective.check(@row,@col)
+  checkTargets: ()->
+    @onTargetCheck(target) for target in @targets when target.check(@row,@col)
     
 # -------------------------------------------------------------------------      
 
 angular.module 'tagatrekApp'
-  .controller 'MainCtrl', ($scope,$interval,Objectives) ->    
+  .controller 'MainCtrl', ($scope,$interval,Targets) ->    
     bot = {}
     gridLastIndex = 10 
     instructionIndex = 0
+    flattenInstructions = []
+    
+    $scope.level = 2
     
     updateBotView = (content)->
       $scope.grid[bot.row][bot.col].content = content
     
     initGrid = () ->
-      $scope.objectivesMet = []
+      $scope.targetsMet = []
       bot = new Bot(updateBotView,gridLastIndex/2, gridLastIndex/2, 90,gridLastIndex)
-      bot.setObjectives $scope.objectives
-      bot.setOnObjectiveCheck((objective)->
-        console.log 'checked! ', objective
-        $scope.objectivesMet.push(objective)
+      bot.setTargets $scope.targets
+      bot.setOnTargetCheck((target)->
+        console.log 'checked! ', target
+        $scope.targetsMet.push(target)
       )
       grid = []
       id = 0
@@ -66,8 +69,8 @@ angular.module 'tagatrekApp'
           colArray.push({id: id, content: 'empty'})
           id++
         grid.push(colArray)  
-      for obj in $scope.objectives
-        grid[obj.row][obj.col].content = "objective"
+      for target in $scope.targets
+        grid[target.row][target.col].content = "target"
         
       $scope.grid = grid
       updateBotView(bot.getContent())
@@ -77,21 +80,25 @@ angular.module 'tagatrekApp'
       
     $scope.startNewGame = ()->
       $scope.selecting = false
-      $scope.objectivesMet = []
-      $scope.program = {instructions : []}
+      updateTargets $scope.datasetId
+      $scope.targetsMet = []
+      $scope.program = {instructions : [], functions: []}
       initGrid()
       
-    updateObjectives = (datasetId)->
-      $scope.objectives = Objectives.getObjectives(datasetId) 
+    findDataset = (datasetId)->
+      for dataset in $scope.datasets
+        if dataset.id == datasetId 
+          return dataset
+      return false
       
-    $scope.$watch('datasetId', (newDatasetId)->
-      updateObjectives newDatasetId
-    )
-      
-    Objectives.getDatasets((datasets)->
-      $scope.datasetId = "1"
+    updateTargets = (datasetId)->
+      $scope.targets = Targets.getTargets(datasetId,gridLastIndex,$scope.level) 
+      $scope.datasetName = findDataset(datasetId).name
+            
+    Targets.getDatasets((datasets)->
+      $scope.datasetId = datasets[0].id
       $scope.datasets = datasets
-      updateObjectives($scope.datasetId)
+      updateTargets($scope.datasetId)
       $scope.startNewGame()
     )
     
@@ -104,35 +111,84 @@ angular.module 'tagatrekApp'
       {id:3, code:"right", name:"Droite"}
     ]
     
-    $scope.addInstruction = (instruction) ->
-      newInstruction = angular.copy(instruction)
-      newInstruction.id = $scope.program.instructions.length
-      $scope.program.instructions.push(newInstruction)
+    $scope.addInstruction = (newInstruction,aFunction) ->
+      if aFunction
+        instructions = aFunction.instructions
+      else
+         instructions  = $scope.program.instructions
+      newInstruction.id = instructions.length
+      instructions.push(newInstruction)  
      
-    $scope.removeInstruction = (instruction) ->
+    $scope.removeInstruction = (instruction,aFunction) ->
+      instructions = if aFunction then aFunction.instructions else $scope.program.instructions
       index = -1
-      index = i for inst,i in $scope.program.instructions when inst.id == instruction.id
+      index = i for inst,i in instructions when inst.id == instruction.id
       if index >= 0   
-        $scope.program.instructions.splice(index,1)
+        instructions.splice(index,1)
       
     $scope.clearProgram = () ->
       $scope.program.instructions = []
-        
+      
     $scope.reset = () ->
       initGrid()
     
     run = () ->
-      switch $scope.program.instructions[instructionIndex].code
+      instruction = flattenInstructions[instructionIndex]
+      switch instruction.code
         when 'right' then bot.turn 90
         when 'left' then bot.turn -90
-        when 'go' then bot.go()        
+        when 'go' then bot.go() 
       instructionIndex += 1
+    
+    flatInstructions = (instructions)->
+      flatten = []
+      for instruction in instructions
+        if instruction.instructions
+          flatten = flatten.concat(instruction.instructions)
+        else
+          flatten.push(instruction)
+      return flatten
     
     $scope.start = () ->
       initGrid()
       instructionIndex = 0
+      flattenInstructions = flatInstructions $scope.program.instructions
       $interval(()->
         run()
-      ,500,$scope.program.instructions.length)
+      ,500,flattenInstructions.length)
     
+    $scope.getTargetUrl = (url)->
+      if url && url.indexOf("http://") != 0
+        return 'http://' + url
+      return url
+    
+    $scope.getTargetImage = (images)->
+      if (!images)
+        return images
+      imagesArray = images.split(';')
+      return imagesArray[0]
+    
+    $scope.$watch('targetsMet',()->
+      $scope.score = $scope.level*(gridLastIndex*gridLastIndex - $scope.program.instructions.length)
+    )
+    
+    # Fonctions -------------------------------------------------------
   
+    $scope.addFunction = ()->
+      newFunction = {id: 'f' + $scope.program.functions.length, instructions:[], code:'function'}
+      newFunction.name = 'Fonction ' + ($scope.program.functions.length+1)
+      $scope.program.functions.push newFunction
+    
+    $scope.removeFunction = (aFunction)->
+      index = -1
+      index = i for f,i in $scope.program.functions when f.id == aFunction.id
+      if index >= 0   
+        $scope.program.functions.splice(index,1)
+      # on l'enlève de la liste des instructions du programme
+      newInstructions = []
+      for inst in $scope.program.instructions 
+        if inst.name != aFunction.name
+          newInstructions.push(inst)
+      $scope.program.instructions = newInstructions
+
+    

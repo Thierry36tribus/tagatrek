@@ -14,7 +14,7 @@ body {
   margin: 5px;
 }
 
-.program {
+.program, .function {
   margin: 30px;
 }
 .footer {
