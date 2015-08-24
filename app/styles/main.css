@@ -1,4 +1,7 @@
-
+body {
+    background: url(../images/back.png);
+    background-size: cover;
+}
 .met img {
   width: 50px;
   height: auto;
