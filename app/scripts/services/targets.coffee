@@ -32,9 +32,9 @@ angular.module 'tagatrekApp'
       data for data in dataset when data.fields.multimedia_url_photo && data.fields.multimedia_url_photo.length > 0
     
     getDatasets = (callback)->
-      $http.get('/data/adt04_loisirs-full.json').success((data1)->
+      $http.get('data/adt04_loisirs-full.json').success((data1)->
         dataset1 = filter(data1)
-        $http.get('/data/adt04_fetes_animations-full.json').success((data2)->
+        $http.get('data/adt04_fetes_animations-full.json').success((data2)->
           dataset2 = filter(data2)
           callback([ {id:'1', name:"Loisirs"}, {id:'2', name:"Fêtes et manifestations"}])
         )

@@ -6,7 +6,7 @@
         <h2 ng-show="targetsMet.length== 0">Programme Tag pour qu'il découvre les Alpes de Haute-Provence !</h2>
         <h3>Données : {{datasetName}}</h3>
         <div>{{datasetName}} atteints : {{targetsMet.length}} / {{targets.length}}</div>
-        <div ng-show="targetsMet.length == targets.length" class="jumbotron">
+        <div ng-show="targets.length > 0 && targetsMet.length == targets.length" class="jumbotron">
           Bravo ! Ton score : {{score}}
         </div>
         <div class="met">
@@ -81,8 +81,10 @@
       <button class="btn btn-default" ng-click="removeFunction(function)" tooltip="Supprimer la fonction"><i class="fa fa-trash-o"></i></button>
     </div>
   </div>
+  <!--
   <div ng-repeat="target in targets"><a href="{{getTargetUrl(target.data.fields.site_web)}}" target="_blank">{{target.data.fields.titre}} <img ng-src="{{getTargetImage(target.data.fields.multimedia_url_photo)}}" width="50"></a></div>
   </div>
+-->
   
 </div>
 
