@@ -81,4 +81,8 @@
       <button class="btn btn-default" ng-click="removeFunction(function)" tooltip="Supprimer la fonction"><i class="fa fa-trash-o"></i></button>
     </div>
   </div>
+  <div ng-repeat="target in targets"><a href="{{getTargetUrl(target.data.fields.site_web)}}" target="_blank">{{target.data.fields.titre}} <img ng-src="{{getTargetImage(target.data.fields.multimedia_url_photo)}}" width="50"></a></div>
+  </div>
+  
 </div>
+
