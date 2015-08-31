@@ -8,9 +8,20 @@ body {
   padding-top: 30px;
   padding-bottom: 50px;
 }
+h1 {
+  margin-top: 0;
+}
+.met {
+  overflow: auto;
+  margin-bottom: 3px;
+}
 .met img {
+  float: left;
   width: 50px;
   height: auto;
+}
+.met p {
+  margin-left: 70px;
 }
 .grid {
 /*  height: 300px;*/
@@ -21,7 +32,7 @@ body {
   height: 30px;
   margin: 5px;
 }
-.new-game {
+.new-game, .targets {
   margin-top: 10px;
   padding: 10px;
   border-radius: 5px;
